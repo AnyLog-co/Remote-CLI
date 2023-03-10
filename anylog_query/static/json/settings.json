@@ -1,7 +1,7 @@
 
 {
   "client" : {
-    "connect_info": "172.16.20.87:32349",
+    "connect_info": "36.33.26.58:9012",
     "buttons" : "commands.json"
   },
   "certificates" : {
