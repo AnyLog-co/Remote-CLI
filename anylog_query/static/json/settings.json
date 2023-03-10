@@ -1,9 +1,8 @@
 
 {
   "client" : {
-    "connect_info": "23.239.12.151:32349",
-    "buttons" : "commands.json",
-    "help" : "link"
+    "connect_info": "172.16.20.87:32349",
+    "buttons" : "commands.json"
   },
   "certificates" : {
       "enable"   : false,

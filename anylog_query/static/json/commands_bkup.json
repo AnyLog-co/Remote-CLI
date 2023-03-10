@@ -99,14 +99,14 @@
       "group": "Demo"
     },
     {
-      "button": "Bring Operator 2 Info",
-      "command":  "blockchain get operator where [name] contains 2 bring.table [operator][name] [operator][country] [operator][city] [operator][ip] [operator][port]",
+      "button": "US Operators",
+      "command":  "blockchain get operator where [country] contains US bring.table [operator][name] [operator][country] [operator][city] [operator][ip] [operator][port]",
       "type": "GET",
       "group": "Demo"
     },
     {
-      "button": "Target Operator",
-      "command": "blockchain get operator where [name] contains 2 bring.ip_port",
+      "button": "Target Operators",
+      "command": "blockchain get operator where [company] contains AFG bring [operator][ip] : [operator][port]  separator = ,",
       "type": "GET",
       "group": "Demo"
     },
@@ -148,19 +148,31 @@
     },
    {
       "button": "Sensor Q1",
-      "command": "sql socnoc format=table and extend=(+node_name) \"select min(timestamp), max(timestamp), count(*) from rand_data;\"",
+      "command": "sql litsanleandro format=table and include=(percentagecpu_sensor) and extend=(@table_name as table) \"select increments(minute, 1, timestamp), device_name, min(timestamp) as min_ts, max(timestamp) as max_ts, min(value) as min_value, avg(value) as avg_value, max(value) as max_value from ping_sensor where timestamp >= NOW() - 1hour GROUP BY device_name ORDER BY min_ts DESC\"",
       "type": "GET",
       "group": "Demo"
     },
     {
       "button": "Sensor Q2",
-      "command": "sql socnoc format=table \"select * from rand_data where timestamp >= NOW() - 10 minutes ORDER BY timestamp DESC\"",
+      "command": "sql litsanleandro format=table and include=(percentagecpu_sensor) \"select increments(minute, 1, timestamp), device_name, min(timestamp)::ljust(19)::rjust(8) as timestamp, min(value) as min, max(value) as max,  avg(value)::float(2) as avg, from ping_sensor where timestamp >= NOW() - 1hour GROUP BY device_name ORDER BY timestamp DESC\"",
       "type": "GET",
       "group": "Demo"
     },
     {
-      "button": "Sensor Q3 - QR",
-      "command": "sql socnoc format=table and extend=(+node_name) \"select timestamp, value from rand_data where timestamp >= NOW() - 10 minutes ORDER BY timestamp\"",
+      "button": "Video",
+      "command": "sql dmci extend=(+country, +city, @ip, @port, @dbms_name, @table_name) and format = json and timezone = utc  select  file, start_ts::ljust(19), end_ts::ljust(19), num_cars, speed from video where start_ts >= NOW() - 1 hour and end_ts <= NOW() order by speed --> selection (columns: ip using ip and port using port and dbms using dbms_name and table using table_name and file using file)",
+      "type": "GET",
+      "group": "Demo"
+    },
+    {
+      "button": "Image",
+      "command": "sql dmci extend=(+node_name, @ip, @port, @dbms_name, @table_name) and format = json and timezone=Europe/Dublin  select  timestamp, file, class, bbox, score, status  from image where timestamp >= now() - 1 hour and timestamp <= NOW() order by timestamp desc --> selection (columns: ip using ip and port using port and dbms using dbms_name and table using table_name and file using file) -->  description (columns: bbox as shape.rect and score)",
+      "type": "GET",
+      "group": "Demo"
+    },
+    {
+      "button": "Fledge - OpenWeather",
+      "command": "sql dmci format=table select * from openweathermap where timestamp >= NOW() - 120 seconds limit 15;",
       "type": "GET",
       "group": "Demo"
     }
