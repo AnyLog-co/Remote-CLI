@@ -93,6 +93,20 @@
         "type": "GET",
         "group": "Query",
         "help_url" : "blob/master/queries.md#query-nodes-in-the-network"
+      },
+      {
+        "button": "Sample Increments Query",
+        "command": "sql [DBMS] format=table \"select increments(minute, 1, timestamp),  min(timestamp) as min_ts, max(timestamp) as max_ts, min(value) as min_value, avg(value) as avg_value, max(value) as max_value from rand_data where timestamp >= NOW() - 1hour\"",
+        "type": "GET",
+        "group": "Query",
+        "help_url" : "blob/master/queries.md#query-nodes-in-the-network"
+      },
+      {
+        "button": "Sample Period Query",
+        "command": "sql [DBMS] format=table and extend=(+node_name)  \"select timestamp, value from rand_data where period(minute, 10, now(), timestamp) ORDER BY timestamp DESC\"",
+        "type": "GET",
+        "group": "Query",
+        "help_url" : "blob/master/queries.md#query-nodes-in-the-network"
       }
   ]
 }
