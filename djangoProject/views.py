@@ -34,6 +34,7 @@ pdf_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "stat
 m_file_ = None          # Updated with the file name with the monitoring options
 s_node_ = None          # Node selected on the monitoring options
 monitoring_info_ = None  # The json file with the monitoring info
+output_pdf_ = False     # A flag to indicate output to PDF
 
 setting_info_, error_msg = json_api.load_json(setting_file)      # Read the setting.json file
 
@@ -66,6 +67,11 @@ if setting_info_:
         nodes_list_ = setting_info_["nodes"]    # List that can change the connect_info nodes
     else:
         nodes_list_ = None
+
+    if "pdf" in setting_info_ and setting_info_["pdf"]:
+        output_pdf_ = True    # Output to PDF
+
+
 
 
 anylog_conn.set_certificate_info(SETTING_CER, pem_dir)       # Set the certificate info in anylog_conn.py
@@ -1642,6 +1648,7 @@ def setting_options(request):
         if s_node_:
             select_info["s_node"] = s_node_  # Last file selected
 
+    select_info["pdf"] = output_pdf_
 
     return render(request, "settings.html", select_info)  # Process the blobs page
 
@@ -1652,6 +1659,7 @@ def form_setting_info(request):
 
     global m_file_      # The name of the monitoring file
     global s_node_      # Node selected on the monitoring options
+    global output_pdf_
 
     global monitoring_info_ # The json file with the monitoring info
     global json_dir_
@@ -1686,6 +1694,8 @@ def form_setting_info(request):
 
     if post_data.get("s_node"):     # A different node is selected for connect_info
         s_node_ = post_data.get("s_node")
+
+    output_pdf_ = True if post_data.get("pdf") else False   # If the flag to print to PDF was selected
 
 # -----------------------------------------------------------------------------------
 # Monitor data from aggregator node
