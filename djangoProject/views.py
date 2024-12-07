@@ -72,8 +72,6 @@ if setting_info_:
         output_pdf_ = True    # Output to PDF
 
 
-
-
 anylog_conn.set_certificate_info(SETTING_CER, pem_dir)       # Set the certificate info in anylog_conn.py
 
 json_file = json_dir_ + commands_file_name         # Add the default name or the name derived from the setting.js file
@@ -1695,7 +1693,8 @@ def form_setting_info(request):
     if post_data.get("s_node"):     # A different node is selected for connect_info
         s_node_ = post_data.get("s_node")
 
-    output_pdf_ = True if post_data.get("pdf") else False   # If the flag to print to PDF was selected
+    if "pdf" in post_data:      # The setting form was visited
+        output_pdf_ = True if post_data.get("pdf") =="on" else False   # If the flag to print to PDF was selected
 
 # -----------------------------------------------------------------------------------
 # Monitor data from aggregator node
