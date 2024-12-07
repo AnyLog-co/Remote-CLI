@@ -1,3 +1,9 @@
+"""
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/
+"""
+
 import sys
 import os
 import re
@@ -22,6 +28,8 @@ pem_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "stat
 blobs_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "static" + os.sep + "blobs" + os.sep + "current"+ os.sep) # Absolute path
 keep_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "static" + os.sep + "blobs" + os.sep + "keep"+ os.sep) # Dir for saved blobs - # Absolute path
 blobs_local_dir = "blobs/current/"
+
+pdf_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "static" + os.sep + "blobs" + os.sep + "pdf_files"+ os.sep) # Absolute path
 
 m_file_ = None          # Updated with the file name with the monitoring options
 s_node_ = None          # Node selected on the monitoring options
@@ -291,8 +299,8 @@ def stream_processes(request):
 # ---------------------------------------------------------------------------------------
 def blobs_processes(request, blobs_button):
 
-    global keep_dir         # Absolute Path - Saved blobss
-    global blobs_dir        # Absolute Path - Copied blobss
+    global keep_dir         # Absolute Path - Saved blobs
+    global blobs_dir        # Absolute Path - Copied blobs
     global blobs_local_dir  # "blobs/current/"
 
     select_info = {}
@@ -557,6 +565,8 @@ def client_processes(request, client_button):
 
         # Process the command
         output = process_anylog(request, user_cmd, False)        # SEND THE COMMAND TO DESTINATION NODE
+
+        #utils_io.to_pdf(pdf_dir, "test", output)
 
 
         return print_network_reply(request, query_result, output, selection_output, get_columns, get_descr)
@@ -1880,3 +1890,4 @@ def organize_monitor_info(select_info, instruct_tree, json_struct):
             table_rows.append(totals_row)
 
         select_info['rows'] = table_rows
+
