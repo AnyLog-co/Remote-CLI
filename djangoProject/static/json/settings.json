@@ -1,7 +1,8 @@
 
 {
   "client" : {
-    "connect_info": "23.239.12.151:32349",
+    "connect_info": "10.0.0.78:7849",
+    "connect_info2": "23.239.12.151:32349",
     "buttons" : "commands.json",
     "help" : "link"
   },

@@ -34,7 +34,6 @@ pdf_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "stat
 m_file_ = None          # Updated with the file name with the monitoring options
 s_node_ = None          # Node selected on the monitoring options
 monitoring_info_ = None  # The json file with the monitoring info
-output_pdf_ = False     # A flag to indicate output to PDF
 
 setting_info_, error_msg = json_api.load_json(setting_file)      # Read the setting.json file
 
@@ -67,10 +66,6 @@ if setting_info_:
         nodes_list_ = setting_info_["nodes"]    # List that can change the connect_info nodes
     else:
         nodes_list_ = None
-
-    if "pdf" in setting_info_ and setting_info_["pdf"]:
-        output_pdf_ = True    # Output to PDF
-
 
 anylog_conn.set_certificate_info(SETTING_CER, pem_dir)       # Set the certificate info in anylog_conn.py
 
@@ -188,6 +183,7 @@ def form_request(request):
     setting_button = request.POST.get("Setting")
     monitor_button = request.POST.get("Monitor")
     chart_type = request.POST.get("chart_type")     # Updated in the QR section to generate QR and HTML to do the graph
+    is_pdf = True if request.POST.get("pdf") == "on" else False
 
     if setting_button and setting_info_:
         # Update the setting form (settings.html)
@@ -201,7 +197,7 @@ def form_request(request):
 
 
     if code_button or chart_type:
-        return code_options(request, chart_type)
+        return code_options(request, chart_type, is_pdf)
 
     if blobs_button or (form == "Blobs" and not client_button and not config_button):
         # Either the blobs Button was selected (on a different form) or the blobs Page is processed.
@@ -600,8 +596,6 @@ def client_processes(request, client_button):
         # Add info which is not selected but is used by the form
         select_info["commands_list"] = ANYLOG_COMMANDS
         select_info["commands_groups"] = COMMANDS_GROUPS
-
-        select_info["pdf"] = output_pdf_
 
         return render(request, "base.html", select_info)
 
@@ -1368,11 +1362,11 @@ def transfer_selections(request, select_info):
 # AnyLog command
 # cURL command
 # -----------------------------------------------------------------------------------
-def code_options(request, chart_type):
+def code_options(request, chart_type, is_pdf):
 
     select_info = {}
 
-    make_qrcode(request, select_info, chart_type)
+    make_qrcode(request, select_info, chart_type, is_pdf)
 
     make_anylog_cmd(request, select_info)
 
@@ -1486,7 +1480,7 @@ def make_anylog_cmd(request, select_info):
 # pypng - required to install but not import
 # Info at https://pythonhosted.org/PyQRCode/moddoc.html
 # -----------------------------------------------------------------------------------
-def make_qrcode(request, select_info, chart_type):
+def make_qrcode(request, select_info, chart_type, is_pdf):
     '''
     chart_type = bar, line, etc.
     '''
@@ -1505,6 +1499,8 @@ def make_qrcode(request, select_info, chart_type):
     url_string = f"http://{conn_info}/?User-Agent=AnyLog/1.23"
     if chart_type:
         url_string += f"?into=html.{chart_type.lower()}"
+    if is_pdf:
+        url_string += f"?pdf=true"
 
     html_info = request.POST.get("html_info")  # User provided info for the HTML
     if html_info:
@@ -1648,8 +1644,6 @@ def setting_options(request):
         if s_node_:
             select_info["s_node"] = s_node_  # Last file selected
 
-    select_info["pdf"] = output_pdf_
-
     return render(request, "settings.html", select_info)  # Process the blobs page
 
 # -----------------------------------------------------------------------------------
@@ -1659,7 +1653,6 @@ def form_setting_info(request):
 
     global m_file_      # The name of the monitoring file
     global s_node_      # Node selected on the monitoring options
-    global output_pdf_
 
     global monitoring_info_ # The json file with the monitoring info
     global json_dir_
@@ -1695,8 +1688,6 @@ def form_setting_info(request):
     if post_data.get("s_node"):     # A different node is selected for connect_info
         s_node_ = post_data.get("s_node")
 
-    if "pdf" in post_data:      # The setting form was visited
-        output_pdf_ = True if post_data.get("pdf") =="on" else False   # If the flag to print to PDF was selected
 
 # -----------------------------------------------------------------------------------
 # Monitor data from aggregator node
