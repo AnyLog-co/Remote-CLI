@@ -79,8 +79,15 @@ def to_pdf(path, filename, output):
     try:
         pdf = FPDF()
         pdf.add_page()
-        pdf.set_font("Courier", size=12)
-        pdf.multi_cell(0, 10, output)
+        font_size = 10  # Font size in points
+        pdf.set_font("Courier", size=font_size)  # Monospaced font
+        line_height = font_size / 2.83464567  # Convert font size from points to mm for exact height
+
+        # Manually split text into lines for controlled spacing
+        lines = output.split('\n')
+        for line in lines:
+            pdf.cell(0, line_height, line, ln=1)  # Use `cell` with exact line height
+
         pdf.output(path + filename + ".pdf")
 
     except:

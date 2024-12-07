@@ -566,8 +566,7 @@ def client_processes(request, client_button):
         # Process the command
         output = process_anylog(request, user_cmd, False)        # SEND THE COMMAND TO DESTINATION NODE
 
-        #utils_io.to_pdf(pdf_dir, "test", output)
-
+        utils_io.to_pdf(pdf_dir, "test", output)
 
         return print_network_reply(request, query_result, output, selection_output, get_columns, get_descr)
 
