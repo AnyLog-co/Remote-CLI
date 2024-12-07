@@ -151,6 +151,7 @@ user_selections_ = [
         'monitor',
         'm_connect_info',       # Monitor page connect info
         'm_refresh',            # Monitor refresh rate in seconds
+        'pdf',                  # Flag indicating pdf output
 ]
 
 url_chars_ = {
@@ -600,6 +601,7 @@ def client_processes(request, client_button):
         select_info["commands_list"] = ANYLOG_COMMANDS
         select_info["commands_groups"] = COMMANDS_GROUPS
 
+        select_info["pdf"] = output_pdf_
 
         return render(request, "base.html", select_info)
 

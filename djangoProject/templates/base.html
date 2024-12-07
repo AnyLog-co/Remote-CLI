@@ -221,6 +221,32 @@
         <input type="text" id="command" name="command" size="166">
     {% endif %}
 
+    {% if pdf %}
+        <br/>
+        <!-- PDF options  -->
+
+        <label for="file_name">File name:</label>
+        <input type="text" id="file_name" name="file_name">
+         &nbsp; &nbsp;
+
+
+        <label for="font_size">Font size:</label>
+        {% if font_size %}
+        <input type="text" id="font_size" name="font_size" value="{{font_size}}"  size="2">
+        {% else %}
+            <input type="text" id="font_size" name="font_size" size="2">
+        {% endif %}
+         &nbsp; &nbsp;
+
+         <label for="title_first">Title Line 1:</label>
+        <input type="text" id="title_first" name="title_first">
+         &nbsp; &nbsp;
+
+         <label for="title_second">Title Line 2:</label>
+        <input type="text" id="title_second" name="title_second">
+
+    {% endif %}
+
 
     <br/> <br/> <br/>
 
