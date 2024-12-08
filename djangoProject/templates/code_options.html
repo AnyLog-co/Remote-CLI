@@ -143,9 +143,7 @@
                 <label for="chart_type">HTML Chart:</label>
                 <select id="chart_type" name="chart_type">
                     {% for entry in chart_options %}
-                        <option value="{{ entry }}" {% if entry == default_chart %}selected{% endif %}>&nbsp;{{ entry }}</option>
-
-                        <option value="{{ entry }}">&nbsp;{{ entry }}</option>
+                        <option value="{{ entry }}" {% if entry == chart_type %}selected{% endif %}>&nbsp;{{ entry }}</option>
                     {% endfor %}
                 </select>
                  &nbsp  &nbsp

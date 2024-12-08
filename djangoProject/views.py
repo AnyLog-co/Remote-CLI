@@ -1501,6 +1501,7 @@ def make_qrcode(request, select_info):
     chart_type = request.POST.get("chart_type")  # Updated in the QR section to generate QR and HTML to do the graph
     if not chart_type:
         chart_type = "Text"  # Default
+    select_info["chart_type"] = chart_type
 
     url_string += f"?into=html.{chart_type.lower()}" if chart_type else "?into=html.text"
 
@@ -1574,7 +1575,7 @@ def make_qrcode(request, select_info):
     select_info["url"] = url_encoded
 
     if user_command.startswith("sql "):
-        select_info["chart_options"] = ["", "Bar", "Multiscale", "Line", "radar", "Doughnut", "Pie", "PolarArea", "OnOff", "Gauge", "JSON", "Text"]
+        select_info["chart_options"] = ["Text", "JSON", "Bar", "Multiscale", "Line", "radar", "Doughnut", "Pie", "PolarArea", "OnOff", "Gauge"]
 
 
 # -----------------------------------------------------------------------------------
