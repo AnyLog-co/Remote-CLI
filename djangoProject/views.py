@@ -1497,8 +1497,9 @@ def make_qrcode(request, select_info, chart_type, is_pdf):
         conn_info = conn_info.strip()
 
     url_string = f"http://{conn_info}/?User-Agent=AnyLog/1.23"
-    if chart_type:
-        url_string += f"?into=html.{chart_type.lower()}"
+
+    url_string += f"?into=html.{chart_type.lower()}" if chart_type else "?into=html.text"
+
     if is_pdf:
         url_string += f"?pdf=true"
 
