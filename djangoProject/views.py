@@ -1575,7 +1575,7 @@ def make_qrcode(request, select_info):
     select_info["url"] = url_encoded
 
     if user_command.startswith("sql "):
-        select_info["chart_options"] = ["Text", "JSON", "Bar", "Multiscale", "Line", "radar", "Doughnut", "Pie", "PolarArea", "OnOff", "Gauge"]
+        select_info["chart_options"] = ["Text", "JSON", "Table", "Bar", "Multiscale", "Line", "radar", "Doughnut", "Pie", "PolarArea", "OnOff", "Gauge"]
 
 
 # -----------------------------------------------------------------------------------
