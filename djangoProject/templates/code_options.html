@@ -141,29 +141,34 @@
              {% if chart_options %}
             <div>
                 <label for="chart_type">HTML Chart:</label>
-                <select id="chart_type" name="chart_type" onchange="this.form.submit();">
+                <select id="chart_type" name="chart_type">
                     {% for entry in chart_options %}
                         <option value="{{ entry }}">&nbsp;{{ entry }}</option>
                     {% endfor %}
                 </select>
                  &nbsp  &nbsp
-                <input type="hidden" id="pdf" name="pdf" value="off">   <!--SET DEFAULT as off -->
                 <label for="pdf"> PDF: </label>
                 {% if pdf %}
                     <input type="checkbox" id="pdf" name="pdf" checked>
                 {% else %}
                     <input type="checkbox" id="pdf" name="pdf">
                 {% endif %}
+                 &nbsp  &nbsp
+                 <input type ="submit" name = "Generate" id="Generate" value="Generate" style="color: black; background-color: #f3f1ec; border: 3pt ridge lightgrey" />
 
                 <div class="input-section">
+
                     <h2>Input Data/JSON</h2>
                     <div>
-                        <!-- Use textarea for multiline input -->
-                        <textarea id="inputBlock" id="html_info" name="html_info" rows="5" cols="30" placeholder="Enter text/JSON here..."></textarea>
+                        {% if html_info %}
+                            <!-- Use textarea for multiline input -->
+                            <textarea id="inputBlock" name="html_info" rows="5" cols="80" placeholder="Enter text/JSON here...">{{html_info}}</textarea>
+                        {% else %}
+                            <textarea id="inputBlock" name="html_info" rows="5" cols="80" placeholder="Enter text/JSON here..."></textarea>
+                        {% endif %}
                     </div>
 
-
-            </div>
+                </div>
             {%  endif  %}
 
         </div>

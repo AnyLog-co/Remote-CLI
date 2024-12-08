@@ -147,6 +147,7 @@ user_selections_ = [
         'm_connect_info',       # Monitor page connect info
         'm_refresh',            # Monitor refresh rate in seconds
         'pdf',                  # Flag indicating pdf output
+        'html_info',            # User input to modify the html output
 ]
 
 url_chars_ = {
@@ -182,8 +183,7 @@ def form_request(request):
     code_button = request.POST.get("Code")      # Create QrCode from the command
     setting_button = request.POST.get("Setting")
     monitor_button = request.POST.get("Monitor")
-    chart_type = request.POST.get("chart_type")     # Updated in the QR section to generate QR and HTML to do the graph
-    is_pdf = True if request.POST.get("pdf") == "on" else False
+    generate = request.POST.get("Generate")     # Updated in the QR section to generate QR and HTML to do the graph
 
     if setting_button and setting_info_:
         # Update the setting form (settings.html)
@@ -196,8 +196,8 @@ def form_request(request):
         return monitor_nodes(request)
 
 
-    if code_button or chart_type:
-        return code_options(request, chart_type, is_pdf)
+    if code_button or generate:
+        return code_options(request)
 
     if blobs_button or (form == "Blobs" and not client_button and not config_button):
         # Either the blobs Button was selected (on a different form) or the blobs Page is processed.
@@ -1362,11 +1362,11 @@ def transfer_selections(request, select_info):
 # AnyLog command
 # cURL command
 # -----------------------------------------------------------------------------------
-def code_options(request, chart_type, is_pdf):
+def code_options(request):
 
     select_info = {}
 
-    make_qrcode(request, select_info, chart_type, is_pdf)
+    make_qrcode(request, select_info)
 
     make_anylog_cmd(request, select_info)
 
@@ -1480,7 +1480,7 @@ def make_anylog_cmd(request, select_info):
 # pypng - required to install but not import
 # Info at https://pythonhosted.org/PyQRCode/moddoc.html
 # -----------------------------------------------------------------------------------
-def make_qrcode(request, select_info, chart_type, is_pdf):
+def make_qrcode(request, select_info):
     '''
     chart_type = bar, line, etc.
     '''
@@ -1498,7 +1498,13 @@ def make_qrcode(request, select_info, chart_type, is_pdf):
 
     url_string = f"http://{conn_info}/?User-Agent=AnyLog/1.23"
 
+    chart_type = request.POST.get("chart_type")  # Updated in the QR section to generate QR and HTML to do the graph
+    if not chart_type:
+        chart_type = "Text"  # Default
+
     url_string += f"?into=html.{chart_type.lower()}" if chart_type else "?into=html.text"
+
+    is_pdf = True if request.POST.get("pdf") == "on" else False
 
     if is_pdf:
         url_string += f"?pdf=true"
