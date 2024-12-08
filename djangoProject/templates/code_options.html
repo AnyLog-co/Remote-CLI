@@ -23,7 +23,7 @@
      <style>
         /* Optional: CSS for styling the textarea */
         #inputBlock {
-            width: 300px; /* Adjust width as needed */
+            width: 600px; /* Adjust width as needed */
             height: 150px; /* Adjust height as needed */
             resize: none; /* Prevent resizing by user */
             border: 1px solid #ccc; /* Optional border style */
@@ -143,6 +143,8 @@
                 <label for="chart_type">HTML Chart:</label>
                 <select id="chart_type" name="chart_type">
                     {% for entry in chart_options %}
+                        <option value="{{ entry }}" {% if entry == default_chart %}selected{% endif %}>&nbsp;{{ entry }}</option>
+
                         <option value="{{ entry }}">&nbsp;{{ entry }}</option>
                     {% endfor %}
                 </select>
@@ -162,9 +164,9 @@
                     <div>
                         {% if html_info %}
                             <!-- Use textarea for multiline input -->
-                            <textarea id="inputBlock" name="html_info" rows="5" cols="80" placeholder="Enter text/JSON here...">{{html_info}}</textarea>
+                            <textarea id="inputBlock" name="html_info" placeholder="Enter text/JSON here...">{{html_info}}</textarea>
                         {% else %}
-                            <textarea id="inputBlock" name="html_info" rows="5" cols="80" placeholder="Enter text/JSON here..."></textarea>
+                            <textarea id="inputBlock" name="html_info" placeholder="Enter text/JSON here..."></textarea>
                         {% endif %}
                     </div>
 
