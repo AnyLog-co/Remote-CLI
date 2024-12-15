@@ -1550,9 +1550,9 @@ def make_qrcode(request, select_info):
 
 
     url_string += '?command='
-    user_command = request.POST.get("command")
+    user_command = request.POST.get("command").strip()
     if user_command:
-        url_string += user_command.strip()
+        url_string += user_command
 
     url_encoded = update_url(url_string)
 
