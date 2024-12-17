@@ -1,3 +1,9 @@
+"""
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/
+"""
+
 import sys
 import os
 import re
@@ -22,6 +28,8 @@ pem_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "stat
 blobs_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "static" + os.sep + "blobs" + os.sep + "current"+ os.sep) # Absolute path
 keep_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "static" + os.sep + "blobs" + os.sep + "keep"+ os.sep) # Dir for saved blobs - # Absolute path
 blobs_local_dir = "blobs/current/"
+
+pdf_dir = os.path.join(str(BASE_DIR) + os.sep + "djangoProject" + os.sep + "static" + os.sep + "blobs" + os.sep + "pdf_files"+ os.sep) # Absolute path
 
 m_file_ = None          # Updated with the file name with the monitoring options
 s_node_ = None          # Node selected on the monitoring options
@@ -58,7 +66,6 @@ if setting_info_:
         nodes_list_ = setting_info_["nodes"]    # List that can change the connect_info nodes
     else:
         nodes_list_ = None
-
 
 anylog_conn.set_certificate_info(SETTING_CER, pem_dir)       # Set the certificate info in anylog_conn.py
 
@@ -139,6 +146,8 @@ user_selections_ = [
         'monitor',
         'm_connect_info',       # Monitor page connect info
         'm_refresh',            # Monitor refresh rate in seconds
+        'pdf',                  # Flag indicating pdf output
+        'html_info',            # User input to modify the html output
 ]
 
 url_chars_ = {
@@ -174,7 +183,7 @@ def form_request(request):
     code_button = request.POST.get("Code")      # Create QrCode from the command
     setting_button = request.POST.get("Setting")
     monitor_button = request.POST.get("Monitor")
-    chart_type = request.POST.get("chart_type")     # Updated in the QR section to generate QR and HTML to do the graph
+    generate = request.POST.get("Generate")     # Updated in the QR section to generate QR and HTML to do the graph
 
     if setting_button and setting_info_:
         # Update the setting form (settings.html)
@@ -187,8 +196,8 @@ def form_request(request):
         return monitor_nodes(request)
 
 
-    if code_button or chart_type:
-        return code_options(request, chart_type)
+    if code_button or generate:
+        return code_options(request)
 
     if blobs_button or (form == "Blobs" and not client_button and not config_button):
         # Either the blobs Button was selected (on a different form) or the blobs Page is processed.
@@ -291,8 +300,8 @@ def stream_processes(request):
 # ---------------------------------------------------------------------------------------
 def blobs_processes(request, blobs_button):
 
-    global keep_dir         # Absolute Path - Saved blobss
-    global blobs_dir        # Absolute Path - Copied blobss
+    global keep_dir         # Absolute Path - Saved blobs
+    global blobs_dir        # Absolute Path - Copied blobs
     global blobs_local_dir  # "blobs/current/"
 
     select_info = {}
@@ -558,6 +567,7 @@ def client_processes(request, client_button):
         # Process the command
         output = process_anylog(request, user_cmd, False)        # SEND THE COMMAND TO DESTINATION NODE
 
+        # utils_io.to_pdf(pdf_dir, "test", output)
 
         return print_network_reply(request, query_result, output, selection_output, get_columns, get_descr)
 
@@ -586,7 +596,6 @@ def client_processes(request, client_button):
         # Add info which is not selected but is used by the form
         select_info["commands_list"] = ANYLOG_COMMANDS
         select_info["commands_groups"] = COMMANDS_GROUPS
-
 
         return render(request, "base.html", select_info)
 
@@ -1353,11 +1362,11 @@ def transfer_selections(request, select_info):
 # AnyLog command
 # cURL command
 # -----------------------------------------------------------------------------------
-def code_options(request, chart_type):
+def code_options(request):
 
     select_info = {}
 
-    make_qrcode(request, select_info, chart_type)
+    make_qrcode(request, select_info)
 
     make_anylog_cmd(request, select_info)
 
@@ -1471,7 +1480,7 @@ def make_anylog_cmd(request, select_info):
 # pypng - required to install but not import
 # Info at https://pythonhosted.org/PyQRCode/moddoc.html
 # -----------------------------------------------------------------------------------
-def make_qrcode(request, select_info, chart_type):
+def make_qrcode(request, select_info):
     '''
     chart_type = bar, line, etc.
     '''
@@ -1488,8 +1497,18 @@ def make_qrcode(request, select_info, chart_type):
         conn_info = conn_info.strip()
 
     url_string = f"http://{conn_info}/?User-Agent=AnyLog/1.23"
-    if chart_type:
-        url_string += f"?into=html.{chart_type.lower()}"
+
+    chart_type = request.POST.get("chart_type")  # Updated in the QR section to generate QR and HTML to do the graph
+    if not chart_type:
+        chart_type = "Text"  # Default
+    select_info["chart_type"] = chart_type
+
+    url_string += f"?into=html.{chart_type.lower()}" if chart_type else "?into=html.text"
+
+    is_pdf = True if request.POST.get("pdf") == "on" else False
+
+    if is_pdf:
+        url_string += f"?pdf=true"
 
     html_info = request.POST.get("html_info")  # User provided info for the HTML
     if html_info:
@@ -1531,9 +1550,9 @@ def make_qrcode(request, select_info, chart_type):
 
 
     url_string += '?command='
-    user_command = request.POST.get("command")
+    user_command = request.POST.get("command").strip()
     if user_command:
-        url_string += user_command.strip()
+        url_string += user_command
 
     url_encoded = update_url(url_string)
 
@@ -1556,7 +1575,7 @@ def make_qrcode(request, select_info, chart_type):
     select_info["url"] = url_encoded
 
     if user_command.startswith("sql "):
-        select_info["chart_options"] = ["", "Bar", "Multiscale", "Line", "radar", "Doughnut", "Pie", "PolarArea", "OnOff", "Gauge", "JSON", "Text"]
+        select_info["chart_options"] = ["Text", "JSON", "Table", "Bar", "Multiscale", "Line", "radar", "Doughnut", "Pie", "PolarArea", "OnOff", "Gauge"]
 
 
 # -----------------------------------------------------------------------------------
@@ -1633,7 +1652,6 @@ def setting_options(request):
         if s_node_:
             select_info["s_node"] = s_node_  # Last file selected
 
-
     return render(request, "settings.html", select_info)  # Process the blobs page
 
 # -----------------------------------------------------------------------------------
@@ -1677,6 +1695,7 @@ def form_setting_info(request):
 
     if post_data.get("s_node"):     # A different node is selected for connect_info
         s_node_ = post_data.get("s_node")
+
 
 # -----------------------------------------------------------------------------------
 # Monitor data from aggregator node
@@ -1880,3 +1899,4 @@ def organize_monitor_info(select_info, instruct_tree, json_struct):
             table_rows.append(totals_row)
 
         select_info['rows'] = table_rows
+
