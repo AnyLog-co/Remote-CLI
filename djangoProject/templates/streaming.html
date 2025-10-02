@@ -83,8 +83,8 @@
 
         {% for url_cmd in destinations %}
 
-            <video width="640" height="480" controls autoplay>
-            <source src="{{ url_cmd }}" type="video/mp4">
+            <video width="640" height="480" controls preload = "none">
+            <source src="{{ url_cmd }}?cb={{ cb }}" type="video/mp4">
             </video>
 
 
