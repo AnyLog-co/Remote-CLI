@@ -76,22 +76,30 @@
 
   <input type="hidden" id="Form" name="Form" value="Blobs">
 
+
+
   </form>
     <br/> <br/> <br/>
+      <style>
+      .media-block { width: 640px; margin-bottom: 16px; }
+      .media-link { display: block; font-family: monospace; font-size: 12px; word-break: break-all; }
+    </style>
 
-      <div>
-
-        {% for url_cmd in destinations %}
-
-            <video width="640" height="480" controls preload = "none">
+    <div>
+      {% for url_cmd in destinations %}
+        <figure class="media-block">
+          <video width="640" height="480" controls preload="none">
             <source src="{{ url_cmd }}?cb={{ cb }}" type="video/mp4">
-            </video>
-
-
-        {% endfor %}
-
-
-      </div>
+            Your browser does not support the video tag.
+          </video>
+          <figcaption class="media-link">
+            <a href="{{ url_cmd }}?cb={{ cb }}" target="_blank" rel="noopener noreferrer">
+              {{ url_cmd }}?cb={{ cb }}
+            </a>
+          </figcaption>
+        </figure>
+      {% endfor %}
+    </div>
 
 
   </body>
